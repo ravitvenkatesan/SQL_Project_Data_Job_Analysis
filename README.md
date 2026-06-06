@@ -25,6 +25,9 @@ I used several powerful tools to do a deep dive into the data analyst job market
 - **Git & Github**: Essential for version control and sharing my SQL scripts and analysis, ensuring collaboration and project tracking
 
 # The Analysis
+
+### 1. Top Paying Data Analyst Jobs
+
 To identify the highest paying roles, I filtered the data analyst positions by average yearly salary and location focusing on remote jobs. This query highlights the high paying jobs in the remote field.
 
 ```sql
@@ -52,6 +55,211 @@ Here's the breakdown of the top data analyst jobs in 2023:
 - **Wide Salary Range:** Top 10 paying data analyst roles range from $124,000 to $650,000 showing a potential for high salaries in this field
 - **Diverse Employers:** Companies like SmartAsset, Meta and AT&T are some of the companies offering high salaries with employers spanning a diverse array of industries.
 - **Job Title Variety:** There's a diverse range of job titles, ranging from Data Analyst to Director of Analytics, reflecting varied roles and specializations within data analytics
+
+### 2. Skills for Top Paying Jobs
+
+To get the skills required for top paying jobs, I joined the job postings table with the skills data, revealing what employers look for in high salary roles.
+
+```sql
+WITH top_paying_jobs AS (
+    SELECT
+        job_id,
+        job_title,
+        salary_year_avg,
+        name AS company_name
+    FROM
+        job_postings_fact
+    LEFT JOIN company_dim
+        ON job_postings_fact.company_id = company_dim.company_id
+    WHERE
+        job_title_short = 'Data Analyst' AND
+        job_work_from_home = True AND
+        salary_year_avg IS NOT NULL
+    ORDER BY
+        salary_year_avg DESC
+    LIMIT 10
+)
+
+SELECT
+    top_paying_jobs.*,
+    skills
+FROM
+    top_paying_jobs
+INNER JOIN skills_job_dim
+    ON top_paying_jobs.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim
+    ON skills_job_dim.skill_id = skills_dim.skill_id
+ORDER BY
+    salary_year_avg DESC;
+```
+- SQL is clearly the leader 
+- It is followed by Python 
+
+### 3.Top Demand Skills for Data Analysts
+
+This query identifies the most required skills in job postings, giving a good idea of areas of demand.
+
+```
+SELECT
+    sd.skills,
+    COUNT(jpf.job_id) AS skill_count
+FROM
+    job_postings_fact AS jpf
+LEFT JOIN skills_job_dim AS sjd
+    ON jpf.job_id = sjd.job_id
+LEFT JOIN skills_dim as sd
+    ON sjd.skill_id = sd.skill_id
+WHERE
+    jpf.job_title_short = 'Data Analyst' AND
+    jpf.salary_year_avg IS NOT NULL AND
+    sd.skills IS NOT NULL
+GROUP BY
+    sd.skill_id,
+    sd.skills
+ORDER BY
+    COUNT(jpf.job_id) DESC
+LIMIT 5;
+```
+- SQL, Excel and occupy the top 2 spots
+- Programming skills in Python and Data Visualization tools like Tableau, R and Power BI show the demand for technical skills and data story telling skills
+```
+| skills  | skill_count |
+|---------|-------------|
+| sql     | 3083        |
+| excel   | 2143        |
+| python  | 1840        |
+| tableau | 1659        |
+| r       | 1073        |
+```
+
+### 4.Top Skills Based On Salary
+This gives the average salaries of various skills and gives us a glimpse of highest paying ones.
+
+```
+SELECT
+    sd.skills,
+    ROUND(AVG(jpf.salary_year_avg), 2) AS avg_salary
+FROM
+    job_postings_fact AS jpf
+LEFT JOIN skills_job_dim AS sjd
+    ON jpf.job_id = sjd.job_id
+LEFT JOIN skills_dim AS sd
+    ON sjd.skill_id = sd.skill_id
+WHERE
+    jpf.job_title_short = 'Data Analyst' AND
+    jpf.salary_year_avg IS NOT NULL AND
+    sd.skills IS NOT NULL
+GROUP BY
+    sd.skill_id,
+    sd.skills
+HAVING
+    COUNT(jpf.job_id) > 10
+ORDER BY
+    avg_salary DESC
+LIMIT 10;   
+```
+- **Big Data & ML Skills are Toppers**: Data analysts with Big Data skills and Machine Learning technologies earn the highest. This shows the industry's recognition of predictive modeling and mega amounts of data processing.
+
+- **Software Development & Deploment**: There is a trend of crossover between data analysis and data engineering, with automation and data pipeline build and management gaining recognition.
+
+- **Cloud Computing Skills**: They have their place in the top order of skills,indicating growth of cloud analytics environments and cloud analytics processing.
+
+```
+| skills     | avg_salary |
+|------------|------------|
+| kafka      | 129999.16  |
+| pytorch    | 125226.20  |
+| perl       | 124685.75  |
+| tensorflow | 120646.83  |
+| cassandra  | 118406.68  |
+| atlassian  | 117965.60  |
+| airflow    | 116387.26  |
+| scala      | 115479.53  |
+| linux      | 114883.20  |
+| confluence | 114153.12  |
+```
+
+### 5. Most optimal skills to learn
+Meaning of Optimal: High Demand AND High Paying
+
+This gives a great idea of the high demand skills, accompanied by high salaries. This gives any aspiring data analyst the idea to develop a critical skill set.
+
+```
+WITH top_skills_by_demand AS (
+    SELECT
+    sd.skill_id,
+    sd.skills,
+    COUNT(jpf.job_id) AS skill_count
+    FROM
+        job_postings_fact AS jpf
+    LEFT JOIN skills_job_dim AS sjd
+        ON jpf.job_id = sjd.job_id
+    LEFT JOIN skills_dim as sd
+        ON sjd.skill_id = sd.skill_id
+    WHERE
+        jpf.job_title_short = 'Data Analyst' AND
+        jpf.salary_year_avg IS NOT NULL AND
+        sd.skills IS NOT NULL
+    GROUP BY
+        sd.skill_id,
+        sd.skills
+    ORDER BY
+        COUNT(jpf.job_id) DESC   
+),
+
+top_skills_by_salary AS (
+    SELECT
+    sd.skill_id,
+    sd.skills,
+    ROUND(AVG(jpf.salary_year_avg), 2) AS avg_salary
+    FROM
+        job_postings_fact AS jpf
+    LEFT JOIN skills_job_dim AS sjd
+        ON jpf.job_id = sjd.job_id
+    LEFT JOIN skills_dim AS sd
+        ON sjd.skill_id = sd.skill_id
+    WHERE
+        jpf.job_title_short = 'Data Analyst' AND
+        jpf.salary_year_avg IS NOT NULL AND
+        sd.skills IS NOT NULL
+    GROUP BY
+        sd.skill_id,
+        sd.skills
+    HAVING
+        COUNT(jpf.job_id) > 10
+    ORDER BY
+        avg_salary DESC      
+)
+
+-- Join both above CTEs to get Optimal
+SELECT
+    top_skills_by_demand.skills,
+    top_skills_by_demand.skill_count,
+    top_skills_by_salary.avg_salary    
+    FROM 
+        top_skills_by_demand
+    INNER JOIN top_skills_by_salary
+        ON top_skills_by_demand.skill_id = top_skills_by_salary.skill_id
+    ORDER BY
+        top_skills_by_demand.skill_count DESC
+    LIMIT 10;
+```
+```
+| skills     | skill_count | avg_salary |
+|------------|-------------|------------|
+| sql        | 3083        | 96435.33   |
+| excel      | 2143        | 86418.90   |
+| python     | 1840        | 101511.85  |
+| tableau    | 1659        | 97978.08   |
+| r          | 1073        | 98707.80   |
+| power bi   | 1044        | 92323.60   |
+| word       | 527         | 82940.76   |
+| powerpoint | 524         | 88315.61   |
+| sas        | 500         | 93707.36   ||
+```
+- **High Demand Programming Languages**: Python and R still rank at the top with decent salaries. Their popularity ensures a large pool of talent is also available for them.
+
+- **Data Visualization & BI Tools**: Tableau and Power BI feature prominently with solid salaries. This highlights the importance of data visualization and story telling.
 
 # What I Learned
 Throughout this exercise, I have exploited the power of SQL to the hilt:

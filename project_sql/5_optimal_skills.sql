@@ -85,5 +85,5 @@ SELECT
         ON top_skills_by_demand.skill_id = top_skills_by_salary.skill_id
     ORDER BY
         top_skills_by_demand.skill_count DESC
-    LIMIT 20;
+    LIMIT 10;
 

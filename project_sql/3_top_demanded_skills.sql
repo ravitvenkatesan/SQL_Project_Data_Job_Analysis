@@ -17,4 +17,4 @@ GROUP BY
     sd.skills
 ORDER BY
     COUNT(jpf.job_id) DESC
-LIMIT 10;
+LIMIT 5;
