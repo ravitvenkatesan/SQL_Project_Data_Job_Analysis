@@ -22,7 +22,8 @@ WITH top_paying_jobs AS (
 )
 
 SELECT
-    top_paying_jobs.*,
+    top_paying_jobs.job_title,
+    top_paying_jobs.salary_year_avg,
     skills
 FROM
     top_paying_jobs
@@ -31,5 +32,6 @@ INNER JOIN skills_job_dim
 INNER JOIN skills_dim
     ON skills_job_dim.skill_id = skills_dim.skill_id
 ORDER BY
-    salary_year_avg DESC;
+    salary_year_avg DESC
+LIMIT 10;
 

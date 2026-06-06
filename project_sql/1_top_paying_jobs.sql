@@ -6,12 +6,8 @@ Why? Highlight the top paying opportunities for Data Analysts, offering insights
 */
 
 SELECT
-    jpf.job_id,
     jpf.job_title,
-    jpf.job_location,
-    jpf.job_schedule_type,
     jpf.salary_year_avg,
-    jpf.job_posted_date,
     cd.name AS company_name
 FROM
     job_postings_fact AS jpf
@@ -27,7 +23,6 @@ LIMIT 10;
 
 --Q1: What are the top paying jobs for my role?
 SELECT
-    jpf.job_id,
     jpf.job_title_short,
     jpf.job_location,
     jpf.salary_year_avg,

@@ -51,6 +51,22 @@ ORDER BY
     jpf.salary_year_avg DESC
 LIMIT 10;
 ```
+```
+| job_title                                       | salary_year_avg | company_name                            |
+|-------------------------------------------------|-----------------|-----------------------------------------|
+| Data Analyst                                    | 650000.0        | Mantys                                  |
+| Director of Analytics                           | 336500.0        | Meta                                    |
+| Associate Director- Data Insights               | 255829.5        | AT&T                                    |
+| Data Analyst, Marketing                         | 232423.0        | Pinterest Job Advertisements            |
+| Data Analyst (Hybrid/Remote)                    | 217000.0        | Uclahealthcareers                       |
+| Principal Data Analyst (Remote)                 | 205000.0        | SmartAsset                              |
+| Director, Data Analyst - HYBRID                 | 189309.0        | Inclusively                             |
+| Principal Data Analyst, AV Performance Analysis | 189000.0        | Motional                                |
+| Principal Data Analyst                          | 186000.0        | SmartAsset                              |
+| ERM Data Analyst                                | 184000.0        | Get It Recruit - Information Technology |
+```
+
+
 Here's the breakdown of the top data analyst jobs in 2023:
 - **Wide Salary Range:** Top 10 paying data analyst roles range from $124,000 to $650,000 showing a potential for high salaries in this field
 - **Diverse Employers:** Companies like SmartAsset, Meta and AT&T are some of the companies offering high salaries with employers spanning a diverse array of industries.
@@ -95,11 +111,28 @@ ORDER BY
 - SQL is clearly the leader 
 - It is followed by Python 
 
+
+```
+| job_title                         | salary_year_avg | skills     |
+|-----------------------------------|-----------------|------------|
+| Associate Director- Data Insights | 255829.5        | sql        |
+| Associate Director- Data Insights | 255829.5        | python     |
+| Associate Director- Data Insights | 255829.5        | r          |
+| Associate Director- Data Insights | 255829.5        | azure      |
+| Associate Director- Data Insights | 255829.5        | databricks |
+| Associate Director- Data Insights | 255829.5        | aws        |
+| Associate Director- Data Insights | 255829.5        | pandas     |
+| Associate Director- Data Insights | 255829.5        | pyspark    |
+| Associate Director- Data Insights | 255829.5        | jupyter    |
+| Associate Director- Data Insights | 255829.5        | excel      |
+
+```
+
 ### 3.Top Demand Skills for Data Analysts
 
 This query identifies the most required skills in job postings, giving a good idea of areas of demand.
 
-```
+```sql
 SELECT
     sd.skills,
     COUNT(jpf.job_id) AS skill_count
@@ -135,7 +168,7 @@ LIMIT 5;
 ### 4.Top Skills Based On Salary
 This gives the average salaries of various skills and gives us a glimpse of highest paying ones.
 
-```
+```sql
 SELECT
     sd.skills,
     ROUND(AVG(jpf.salary_year_avg), 2) AS avg_salary
@@ -184,7 +217,7 @@ Meaning of Optimal: High Demand AND High Paying
 
 This gives a great idea of the high demand skills, accompanied by high salaries. This gives any aspiring data analyst the idea to develop a critical skill set.
 
-```
+```sql
 WITH top_skills_by_demand AS (
     SELECT
     sd.skill_id,
@@ -255,7 +288,7 @@ SELECT
 | power bi   | 1044        | 92323.60   |
 | word       | 527         | 82940.76   |
 | powerpoint | 524         | 88315.61   |
-| sas        | 500         | 93707.36   ||
+| sas        | 500         | 93707.36   |
 ```
 - **High Demand Programming Languages**: Python and R still rank at the top with decent salaries. Their popularity ensures a large pool of talent is also available for them.
 
